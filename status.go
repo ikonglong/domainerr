@@ -255,8 +255,8 @@ func NewWithCode(code Code) *Status {
 //
 //	StatusNotFound.WithMessage("Could not find 'important_file.txt'")
 type Status struct {
-	code    Code
-	theCase Case
+	code         Code
+	specificCase Case
 	// A developer-facing error message, which should be in English. Any
 	// user-facing error message should be localized and sent in the
 	// details field, or localized by the client.
@@ -280,10 +280,10 @@ func (s *Status) WithMessage(msg string) *Status {
 		return &_copy // return a copy of this Status
 	}
 	return &Status{
-		code:    s.code,
-		theCase: s.theCase,
-		message: msg,
-		details: copyDetails(s.details),
+		code:         s.code,
+		specificCase: s.specificCase,
+		message:      msg,
+		details:      copyDetails(s.details),
 	}
 }
 
@@ -295,30 +295,30 @@ func (s *Status) WithMessagef(msgFmt string, fmtArgs ...any) *Status {
 
 // WithCase returns a derived instance of this Status with the given case.
 func (s *Status) WithCase(theCase Case) *Status {
-	if s.theCase == theCase { // todo 深度比较 case
+	if s.specificCase == theCase { // todo 深度比较 case
 		_copy := *s
 		return &_copy // return a copy of this Status
 	}
 	return &Status{
-		code:    s.code,
-		theCase: theCase,
-		message: s.message,
-		details: s.details,
+		code:         s.code,
+		specificCase: theCase,
+		message:      s.message,
+		details:      s.details,
 	}
 }
 
 // WithCaseAndMsg returns a derived instance of this Status with the given case and message.
 func (s *Status) WithCaseAndMsg(theCase Case, message string) *Status {
 	message = strings.TrimSpace(message)
-	if s.theCase == theCase && s.message == message { // todo 深度比较 case
+	if s.specificCase == theCase && s.message == message { // todo 深度比较 case
 		_copy := *s
 		return &_copy
 	}
 	return &Status{
-		code:    s.code,
-		theCase: theCase,
-		message: message,
-		details: copyDetails(s.details),
+		code:         s.code,
+		specificCase: theCase,
+		message:      message,
+		details:      copyDetails(s.details),
 	}
 }
 
@@ -367,8 +367,8 @@ func (s *Status) Message() string {
 	return s.message
 }
 
-func (s *Status) TheCase() Case {
-	return s.theCase
+func (s *Status) SpecificCase() Case {
+	return s.specificCase
 }
 
 func (s *Status) Details() map[string]any {
@@ -402,10 +402,10 @@ func (s *Status) RetryAdvice() RetryAdvice {
 }
 
 func (s *Status) Equal(s2 *Status) bool {
-	if s.theCase == nil {
+	if s.specificCase == nil {
 		return s.code == s2.code
 	}
-	return s.code == s2.code && s.theCase.Identifier() == s.TheCase().Identifier()
+	return s.code == s2.code && s.specificCase.Identifier() == s.SpecificCase().Identifier()
 }
 
 func (s *Status) copy() *Status {
