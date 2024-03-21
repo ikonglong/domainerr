@@ -89,3 +89,145 @@ func AsOpError(err error) (bool, *Error) {
 	//var opErr Error
 	//return errors.As(err, &opErr), &opErr
 }
+
+type ErrorBuilder struct {
+	status *Status
+	cause  error
+}
+
+func (b *ErrorBuilder) WithMessage(msg string) *ErrorBuilder {
+	b.status = b.status.WithMessage(msg)
+	return b
+}
+
+func (b *ErrorBuilder) WithMessagef(msgFmt string, a ...any) *ErrorBuilder {
+	b.status = b.status.WithMessagef(msgFmt, a...)
+	return b
+}
+
+func (b *ErrorBuilder) WithSpecificCase(c Case) *ErrorBuilder {
+	b.status = b.status.WithCase(c)
+	return b
+}
+
+func (b *ErrorBuilder) WithDetails(details map[string]any) *ErrorBuilder {
+	b.status.AddDetails(details)
+	return b
+}
+
+func (b *ErrorBuilder) WithCause(cause error) *ErrorBuilder {
+	b.cause = cause
+	return b
+}
+
+func (b *ErrorBuilder) Build() *Error {
+	return NewError(b.status, WithCause(b.cause))
+}
+
+func NewCancelled() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusCancelled,
+	}
+}
+
+func NewUnknownError() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusUnknown,
+	}
+}
+
+func NewInvalidArgument() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusInvalidArgument,
+	}
+}
+
+func NewDeadlineExceeded() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusDeadlineExceeded,
+	}
+}
+
+func NewNotFound() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusNotFound,
+	}
+}
+
+func NewAlreadyExists() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusAlreadyExists,
+	}
+}
+
+func NewPermissionDenied() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusPermissionDenied,
+	}
+}
+
+func NewUnauthenticated() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusUnauthenticated,
+	}
+}
+
+func NewResourceExhausted() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusResourceExhausted,
+	}
+}
+
+func NewFailedPrecondition() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusFailedPrecondition,
+	}
+}
+
+func NewAborted() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusAborted,
+	}
+}
+
+func NewOutOfRange() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusOutOfRange,
+	}
+}
+
+func NewUnimplemented() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusUnimplemented,
+	}
+}
+
+func NewInternalError() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusInternal,
+	}
+}
+
+func NewUnavailable() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusUnavailable,
+	}
+}
+
+func NewDataLoss() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusDataLoss,
+	}
+}
+
+func NewUndefined() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusUndefined,
+	}
+}
+
+func NewAuthorizationExpired() *ErrorBuilder {
+	return &ErrorBuilder{
+		status: StatusAuthorizationExpired,
+	}
+}
