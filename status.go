@@ -294,14 +294,14 @@ func (s *Status) WithMessagef(msgFmt string, fmtArgs ...any) *Status {
 }
 
 // WithCase returns a derived instance of this Status with the given case.
-func (s *Status) WithCase(theCase Case) *Status {
-	if s.specificCase == theCase { // todo 深度比较 case
+func (s *Status) WithCase(c Case) *Status {
+	if s.specificCase == c { // todo 深度比较 case
 		_copy := *s
 		return &_copy // return a copy of this Status
 	}
 	return &Status{
 		code:         s.code,
-		specificCase: theCase,
+		specificCase: c,
 		message:      s.message,
 		details:      s.details,
 	}
