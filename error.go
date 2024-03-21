@@ -51,13 +51,13 @@ func (e *Error) Error() string {
 
 // AugmentMessage is a shortcut of err.Status().AugmentMessage(...), and augments the message of
 // the status of this error with more contextual information of current use case scenario.
-func (e *Error) AugmentMessage(moreContext string) {
-	e.status.AugmentMessage(moreContext)
+func (e *Error) AugmentMessage(moreCtx string) {
+	e.status.AugmentMessage(moreCtx)
 }
 
 // AugmentMessagef sees comment for AugmentMessage
-func (e *Error) AugmentMessagef(moreContextFmt string, args ...any) {
-	e.status.AugmentMessage(fmt.Sprintf(moreContextFmt, args...))
+func (e *Error) AugmentMessagef(moreCtxFmt string, args ...any) {
+	e.status.AugmentMessage(fmt.Sprintf(moreCtxFmt, args...))
 }
 
 // Format implements the fmt.Formatter interface.
