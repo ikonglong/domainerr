@@ -18,7 +18,7 @@ github.com/ikonglong/domainerr.TestError_WithoutCause
 testing.tRunner
 	.+/testing/testing.go:\d+
 runtime.goexit
-	.+/runtime/asm_amd64.s:\d+`
+	.+/runtime/asm_.+.s:\d+`
 	testTextRegexp(t, want, fmt.Sprintf("%+v", err))
 }
 
@@ -33,7 +33,7 @@ github.com/ikonglong/domainerr.TestError_WithCauseMissingStack
 testing.tRunner
 	.+/testing/testing.go:\d+
 runtime.goexit
-	.+/runtime/asm_amd64.s:\d+
+	.+/runtime/asm_.+.s:\d+
 caused by: causal error`
 	testTextRegexp(t, want, fmt.Sprintf("%+v", err))
 }
@@ -59,7 +59,7 @@ github.com/ikonglong/domainerr.TestError_WithCauseHavingStack
 testing.tRunner
 	.+/testing/testing.go:\d+
 runtime.goexit
-	.+/runtime/asm_amd64.s:\d+
+	.+/runtime/asm_.+.s:\d+
 caused by: network error
 github.com/ikonglong/domainerr.database.insert
 	.+/github.com/ikonglong/domainerr/error_test.go:\d+
@@ -93,7 +93,7 @@ github.com/ikonglong/domainerr.TestError_WithCauseMissingStack_WithCauseHavingSt
 testing.tRunner
 	.+/testing/testing.go:\d+
 runtime.goexit
-	.+/runtime/asm_amd64.s:\d+
+	.+/runtime/asm_.+.s:\d+
 caused by: failed to persist exec record, network error
 caused by: network error
 github.com/ikonglong/domainerr.database.insert
