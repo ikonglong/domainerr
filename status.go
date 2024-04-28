@@ -261,7 +261,7 @@ type Status struct {
 	// user-facing error message should be localized and sent in the
 	// details field, or localized by the client.
 	message string
-	details map[string]any
+	details any
 }
 
 func newStatus(code Code) Status {
@@ -283,7 +283,7 @@ func (s *Status) WithMessage(msg string) *Status {
 		code:         s.code,
 		specificCase: s.specificCase,
 		message:      msg,
-		details:      copyDetails(s.details),
+		details:      s.details,
 	}
 }
 
@@ -318,7 +318,7 @@ func (s *Status) WithCaseAndMsg(theCase Case, message string) *Status {
 		code:         s.code,
 		specificCase: theCase,
 		message:      message,
-		details:      copyDetails(s.details),
+		details:      s.details,
 	}
 }
 
@@ -343,19 +343,12 @@ func (s *Status) AugmentMessage(moreContext string) {
 	s.message = newMsg
 }
 
-// AddDetail adds a detail about the failure.
-func (s *Status) AddDetail(key string, value any) {
-	key = strings.TrimSpace(key)
-	if key == "" {
-		return
-	}
-	s.details[key] = value
-}
-
-// AddDetails adds details about the failure.
-func (s *Status) AddDetails(details map[string]any) {
-	for key, val := range details {
-		s.AddDetail(key, val)
+func (s *Status) WithDetails(v any) *Status {
+	return &Status{
+		code:         s.code,
+		specificCase: s.specificCase,
+		message:      s.message,
+		details:      v,
 	}
 }
 
@@ -371,7 +364,7 @@ func (s *Status) SpecificCase() Case {
 	return s.specificCase
 }
 
-func (s *Status) Details() map[string]any {
+func (s *Status) Details() any {
 	return s.details
 }
 
@@ -411,15 +404,4 @@ func (s *Status) Equal(s2 *Status) bool {
 func (s *Status) copy() *Status {
 	copy := *s
 	return &copy
-}
-
-func copyDetails(details map[string]any) map[string]any {
-	if details == nil {
-		return map[string]any{}
-	}
-	_copy := make(map[string]any, len(details)+2)
-	for k, v := range details {
-		_copy[k] = v
-	}
-	return _copy
 }

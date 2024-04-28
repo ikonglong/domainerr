@@ -110,8 +110,8 @@ func (b *ErrorBuilder) WithSpecificCase(c Case) *ErrorBuilder {
 	return b
 }
 
-func (b *ErrorBuilder) WithDetails(details map[string]any) *ErrorBuilder {
-	b.status.AddDetails(details)
+func (b *ErrorBuilder) WithDetails(v any) *ErrorBuilder {
+	b.status = b.status.WithDetails(v)
 	return b
 }
 
