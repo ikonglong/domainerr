@@ -22,6 +22,7 @@ func WithCause(cause error) ErrorOpt {
 	}
 }
 
+// NewError Deprecated
 func NewError(status *Status, opts ...ErrorOpt) *Error {
 	e := &Error{
 		status: status,
@@ -122,6 +123,12 @@ func (b *ErrorBuilder) WithCause(cause error) *ErrorBuilder {
 
 func (b *ErrorBuilder) Build() *Error {
 	return NewError(b.status, WithCause(b.cause))
+}
+
+func NewWithStatus(s *Status) *ErrorBuilder {
+	return &ErrorBuilder{
+		status: s,
+	}
 }
 
 func NewCancelled() *ErrorBuilder {
