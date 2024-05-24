@@ -2,6 +2,7 @@ package domainerr
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -30,7 +31,7 @@ func NewError(status *Status, opts ...ErrorOpt) *Error {
 	for _, setOpt := range opts {
 		setOpt(e)
 	}
-	e.stack = errors.Callers()
+	e.stack = errors.Callers(1)
 	return e
 }
 
@@ -48,6 +49,39 @@ func (e *Error) Unwrap() error {
 
 func (e *Error) Error() string {
 	return e.status.String()
+}
+
+func (e *Error) ChainMsg() string {
+	var sb strings.Builder
+	var err error = e
+	reachEnd := false
+	for {
+		switch v := err.(type) {
+		case nil:
+			reachEnd = true
+		case *Error:
+			if IsNil(v) {
+				reachEnd = true
+				break
+			}
+			sb.WriteString(v.Status().Message())
+		case error:
+			if IsNil(v) {
+				reachEnd = true
+				break
+			}
+			sb.WriteString(v.Error())
+		}
+
+		if reachEnd {
+			break
+		} else {
+			sb.WriteString(" -> ")
+			err = TraceCauseOnce(err)
+		}
+	}
+	s := sb.String()
+	return s[:len(s)-4]
 }
 
 // AugmentMessage is a shortcut of err.Status().AugmentMessage(...), and augments the message of
@@ -87,8 +121,8 @@ func StatusFromErrChain(err error) *Status {
 // it returns false.
 func AsOpError(err error) (bool, *Error) {
 	panic("implement me")
-	//var opErr Error
-	//return errors.As(err, &opErr), &opErr
+	// var opErr Error
+	// return errors.As(err, &opErr), &opErr
 }
 
 type ErrorBuilder struct {
@@ -122,7 +156,11 @@ func (b *ErrorBuilder) WithCause(cause error) *ErrorBuilder {
 }
 
 func (b *ErrorBuilder) Build() *Error {
-	return NewError(b.status, WithCause(b.cause))
+	return &Error{
+		status: b.status,
+		cause:  b.cause,
+		stack:  errors.Callers(1),
+	}
 }
 
 func NewWithStatus(s *Status) *ErrorBuilder {

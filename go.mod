@@ -13,4 +13,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/pkg/errors => github.com/ikonglong/go-errors v0.9.2-alpha-4
+replace github.com/pkg/errors => github.com/ikonglong/go-errors v0.9.2-alpha-9

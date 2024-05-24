@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/pkg/errors"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestError_WithoutCause(t *testing.T) {
@@ -80,7 +81,6 @@ func TestError_WithCauseMissingStack_WithCauseHavingStack(t *testing.T) {
 		},
 	}
 	err := app.exec("just wrap error")
-	fmt.Printf("%+v\n", err)
 
 	want := `
 error occurred: InternalError: failed to save exec record
@@ -165,4 +165,41 @@ func (r repository) save(rec execRecord) error {
 
 func (d database) insert(record string) error {
 	return errors.Errorf("network error")
+}
+
+func TestChainMsg(t *testing.T) {
+	e1 := NewInternalError().WithMessage("error a").Build()
+	assert.Equal(t, "error a", e1.ChainMsg())
+
+	e2 := NewInternalError().WithMessage("error a").
+		WithCause(fmt.Errorf("error b")).
+		Build()
+	assert.Equal(t, "error a -> error b", e2.ChainMsg())
+
+	e3 := NewInternalError().WithMessage("error a").
+		WithCause(NewUnknownError().WithMessage("error b").WithCause(fmt.Errorf("error c")).Build()).
+		Build()
+	assert.Equal(t, "error a -> error b -> error c", e3.ChainMsg())
+
+	var nilDomainErr *Error
+	e4 := NewInternalError().WithMessage("error a").
+		WithCause(nilDomainErr).Build()
+	assert.Equal(t, "error a", e4.ChainMsg())
+
+	e5 := NewInternalError().WithMessage("error a").
+		WithCause(nil).Build()
+	assert.Equal(t, "error a", e5.ChainMsg())
+
+	var nilErr error = nil
+	e6 := NewInternalError().WithMessage("error a").
+		WithCause(nilErr).Build()
+	assert.Equal(t, "error a", e6.ChainMsg())
+
+	e7 := NewInternalError().WithMessage("error a").
+		WithCause(errors.WithStack(fmt.Errorf("error b"))).Build()
+	assert.Equal(t, "error a -> error b -> error b", e7.ChainMsg())
+
+	e8 := NewInternalError().WithMessage("error a").
+		WithCause(fmt.Errorf("wrap error: %w", fmt.Errorf("error c"))).Build()
+	assert.Equal(t, "error a -> wrap error: error c", e8.ChainMsg())
 }

@@ -38,3 +38,11 @@ func IsNil(a any) bool {
 func NotNil(a any) bool {
 	return !IsNil(a)
 }
+
+func TraceCauseOnce(err error) error {
+	switch e := err.(type) {
+	case interface{ Cause() error }:
+		return e.Cause()
+	}
+	return nil
+}
