@@ -3,6 +3,7 @@ package domainerr
 import (
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 func CheckArgument(expected bool, failureFmt string, args ...any) error {
@@ -45,4 +46,46 @@ func TraceCauseOnce(err error) error {
 		return e.Cause()
 	}
 	return nil
+}
+
+// ChainMsg strings each error's message in the given chain together with separator '->'.
+//
+// The next error in the chain is got by `interface{ Cause() error }`. If an error implements
+// `interface{ Unwrap() error }`, this error wrapper and the wrapped error are together handled
+// as an error on the chain.
+func ChainMsg(chain error) string {
+	if chain == nil {
+		return ""
+	}
+
+	var err error = chain
+	var sb strings.Builder
+	reachEnd := false
+	for {
+		switch v := err.(type) {
+		case nil:
+			reachEnd = true
+		case *Error:
+			if IsNil(v) {
+				reachEnd = true
+				break
+			}
+			sb.WriteString(v.Status().Message())
+		case error:
+			if IsNil(v) {
+				reachEnd = true
+				break
+			}
+			sb.WriteString(v.Error())
+		}
+
+		if reachEnd {
+			break
+		} else {
+			sb.WriteString(" -> ")
+			err = TraceCauseOnce(err)
+		}
+	}
+	s := sb.String()
+	return s[:len(s)-4]
 }

@@ -2,7 +2,6 @@ package domainerr
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -51,37 +50,13 @@ func (e *Error) Error() string {
 	return e.status.String()
 }
 
+// ChainMsg strings each error's message in this chain together with separator '->'.
+//
+// The next error in the chain is got by `interface{ Cause() error }`. If an error implements
+// `interface{ Unwrap() error }`, this error wrapper and the wrapped error are together handled
+// as an error on the chain.
 func (e *Error) ChainMsg() string {
-	var sb strings.Builder
-	var err error = e
-	reachEnd := false
-	for {
-		switch v := err.(type) {
-		case nil:
-			reachEnd = true
-		case *Error:
-			if IsNil(v) {
-				reachEnd = true
-				break
-			}
-			sb.WriteString(v.Status().Message())
-		case error:
-			if IsNil(v) {
-				reachEnd = true
-				break
-			}
-			sb.WriteString(v.Error())
-		}
-
-		if reachEnd {
-			break
-		} else {
-			sb.WriteString(" -> ")
-			err = TraceCauseOnce(err)
-		}
-	}
-	s := sb.String()
-	return s[:len(s)-4]
+	return ChainMsg(e)
 }
 
 // AugmentMessage is a shortcut of err.Status().AugmentMessage(...), and augments the message of
