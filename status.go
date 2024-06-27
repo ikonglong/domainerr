@@ -381,6 +381,22 @@ func (s *Status) String() string {
 	return s.code.Name() + ": " + s.message
 }
 
+func (s *Status) ToObjStyleStr() string {
+	var b strings.Builder
+	b.Grow(200)
+	fmt.Fprintf(&b, "%s{", s.code.Name())
+	fmt.Fprintf(&b, "code:%d", s.code.Value())
+	if s.specificCase != nil {
+		fmt.Fprintf(&b, `,specificCase:"%s"`, s.specificCase.Identifier())
+	}
+	fmt.Fprintf(&b, `,message:"%s"`, s.Message())
+	if s.details != nil {
+		fmt.Fprintf(&b, ",details:%+v", s.Details())
+	}
+	fmt.Fprintf(&b, "}")
+	return b.String()
+}
+
 // RetryAdvice provides advice on retry for this status.
 func (s *Status) RetryAdvice() RetryAdvice {
 	advice := NoAdvice

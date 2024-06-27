@@ -46,8 +46,12 @@ func (e *Error) Unwrap() error {
 	return e.cause
 }
 
+func (e *Error) Details() any {
+	return e.status.Details()
+}
+
 func (e *Error) Error() string {
-	return e.status.String()
+	return e.status.ToObjStyleStr()
 }
 
 // ChainMsg strings each error's message in this chain together with separator '->'.
