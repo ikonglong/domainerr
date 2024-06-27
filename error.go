@@ -79,31 +79,6 @@ func (e *Error) Format(s fmt.State, verb rune) {
 	errors.FormatError(e, s, verb)
 }
 
-// StatusFromErrChain finds the first op Error from the causal chain of given error.
-// If one is found, return its status. Otherwise, return nil
-func StatusFromErrChain(err error) *Status {
-	if IsNil(err) {
-		return nil
-	}
-	cause := err
-	for NotNil(cause) {
-		if match, opErr := AsOpError(cause); match {
-			return opErr.Status()
-		}
-		cause = errors.Unwrap(cause)
-	}
-	return nil
-}
-
-// AsOpError finds the first error in given error chain that is of type opError,
-// and if one is found, sets target to that error value and returns true. Otherwise,
-// it returns false.
-func AsOpError(err error) (bool, *Error) {
-	panic("implement me")
-	// var opErr Error
-	// return errors.As(err, &opErr), &opErr
-}
-
 type ErrorBuilder struct {
 	status *Status
 	cause  error

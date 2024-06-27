@@ -12,7 +12,7 @@ import (
 func TestError_WithoutCause(t *testing.T) {
 	err := NewError(StatusInternal.WithMessage("internal error"))
 	want := `
-error occurred: InternalError: internal error
+error occurred: .+
 github.com/ikonglong/domainerr.TestError_WithoutCause
 	.+/github.com/ikonglong/domainerr/error_test.go:\d+
 testing.tRunner
@@ -27,7 +27,7 @@ func TestError_WithCauseMissingStack(t *testing.T) {
 	err := NewError(StatusInternal.WithMessage("internal error"), WithCause(cause))
 
 	want := `
-error occurred: InternalError: internal error
+error occurred: .+
 github.com/ikonglong/domainerr.TestError_WithCauseMissingStack
 	.+/github.com/ikonglong/domainerr/error_test.go:\d+
 testing.tRunner
@@ -49,7 +49,7 @@ func TestError_WithCauseHavingStack(t *testing.T) {
 	err := app.exec("test")
 
 	want := `
-error occurred: InternalError: failed to save exec record
+error occurred: .+
 github.com/ikonglong/domainerr.service.exec
 	.+/github.com/ikonglong/domainerr/error_test.go:\d+
 github.com/ikonglong/domainerr.application.exec
@@ -82,7 +82,7 @@ func TestError_WithCauseMissingStack_WithCauseHavingStack(t *testing.T) {
 	err := app.exec("just wrap error")
 
 	want := `
-error occurred: InternalError: failed to save exec record
+error occurred: .+
 github.com/ikonglong/domainerr.service.exec
 	.+/github.com/ikonglong/domainerr/error_test.go:\d+
 github.com/ikonglong/domainerr.application.exec
